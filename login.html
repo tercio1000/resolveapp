@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResolveApp - Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 35px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            color: #0284c7;
+            margin-bottom: 8px;
+        }
+        
+        .subtitulo {
+            color: #64748b;
+            font-size: 16px;
+        }
+        
+        /* Seletor de Tipo de Usuário */
+        .seletor-tipo {
+            display: flex;
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 25px;
+        }
+        
+        .tipo-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .tipo-btn.ativo {
+            background: white;
+            color: #0284c7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .tipo-btn:hover:not(.ativo) {
+            color: #0f172a;
+        }
+        
+        /* Campos do Formulário */
+        .campo {
+            margin-bottom: 18px;
+        }
+        
+        .campo label {
+            display: block;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        
+        .campo input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        
+        .campo input:focus {
+            outline: none;
+            border-color: #0284c7;
+        }
+        
+        .esqueci-senha {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+        
+        .esqueci-senha a {
+            color: #0284c7;
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .esqueci-senha a:hover {
+            text-decoration: underline;
+        }
+        
+        .btn-entrar {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-bottom: 20px;
+        }
+        
+        .btn-entrar:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-entrar:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .divisor {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .divisor::before,
+        .divisor::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #e2e8f0;
+        }
+        
+        .divisor::before { left: 0; }
+        .divisor::after { right: 0; }
+        
+        .link-cadastro {
+            text-align: center;
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .link-cadastro a {
+            color: #0284c7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .link-cadastro a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Mensagem de erro */
+        .mensagem-erro {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🛠️ ResolveApp</div>
+            <div class="subtitulo">Bem-vindo de volta!</div>
+        </div>
+
+        <!-- Seletor de Tipo -->
+        <div class="seletor-tipo">
+            <button class="tipo-btn ativo" id="btnCliente" onclick="selecionarTipo('cliente')">
+                👤 Cliente
+            </button>
+            <button class="tipo-btn" id="btnProfissional" onclick="selecionarTipo('profissional')">
+                🔧 Profissional
+            </button>
+        </div>
+
+        <!-- Mensagem de Erro -->
+        <div class="mensagem-erro" id="mensagemErro"></div>
+
+        <!-- Formulário -->
+        <form onsubmit="return false;">
+            <div class="campo">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" placeholder="seu@email.com" required>
+            </div>
+
+            <div class="campo">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" placeholder="Digite sua senha" required>
+            </div>
+
+            <div class="esqueci-senha">
+                <a href="#" onclick="alert('Um link de recuperação foi enviado para seu e-mail!')">Esqueci minha senha</a>
+            </div>
+
+            <button type="button" class="btn-entrar" id="btnEntrar" onclick="fazerLogin()">
+                ENTRAR
+            </button>
+        </form>
+
+        <div class="divisor">ou</div>
+
+        <div class="link-cadastro">
+            Ainda não tem conta? <a href="cadastro-profissional.html">Cadastre-se aqui</a>
+        </div>
+    </div>
+
+    <script>
+        let tipoUsuario = 'cliente';
+
+        function selecionarTipo(tipo) {
+            tipoUsuario = tipo;
+            
+            // Atualiza visual dos botões
+            document.getElementById('btnCliente').classList.remove('ativo');
+            document.getElementById('btnProfissional').classList.remove('ativo');
+            
+            if (tipo === 'cliente') {
+                document.getElementById('btnCliente').classList.add('ativo');
+            } else {
+                document.getElementById('btnProfissional').classList.add('ativo');
+            }
+            
+            // Esconde mensagem de erro
+            document.getElementById('mensagemErro').style.display = 'none';
+        }
+
+        function fazerLogin() {
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const mensagemErro = document.getElementById('mensagemErro');
+            
+            // Validação simples
+            if (!email || !senha) {
+                mensagemErro.innerText = '⚠️ Por favor, preencha e-mail e senha.';
+                mensagemErro.style.display = 'block';
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                mensagemErro.innerText = '⚠️ E-mail inválido.';
+                mensagemErro.style.display = 'block';
+                return;
+            }
+            
+            if (senha.length < 6) {
+                mensagemErro.innerText = '⚠️ A senha deve ter no mínimo 6 caracteres.';
+                mensagemErro.style.display = 'block';
+                return;
+            }
+            
+            // Simula login bem-sucedido
+            mensagemErro.style.display = 'none';
+            
+            if (tipoUsuario === 'cliente') {
+                alert(`✅ Login realizado com sucesso!\n\nBem-vindo(a), Cliente!\n\n(No app real, você seria redirecionado para a tela de demanda)`);
+                // No futuro: window.location.href = 'index.html';
+            } else {
+                alert(`✅ Login realizado com sucesso!\n\nBem-vindo, Profissional!\n\n(No app real, você seria redirecionado para o painel de demandas)`);
+                // No futuro: window.location.href = 'profissional.html';
+            }
+        }
+
+        // Permite pressionar Enter para entrar
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                fazerLogin();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResolveApp - Contrato de Serviço</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f1f5f9;
+            padding: 20px;
+            color: #0f172a;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .header-contrato {
+            text-align: center;
+            border-bottom: 3px solid #0284c7;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0284c7;
+            margin-bottom: 8px;
+        }
+        
+        .titulo-contrato {
+            font-size: 20px;
+            color: #334155;
+            font-weight: 600;
+        }
+        
+        .numero-contrato {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 8px;
+        }
+        
+        .secao {
+            margin-bottom: 25px;
+        }
+        
+        .secao h3 {
+            color: #0284c7;
+            font-size: 16px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e0f2fe;
+        }
+        
+        .secao p, .secao li {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        
+        .secao ul {
+            padding-left: 20px;
+        }
+        
+        .dados-partes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .dado-item {
+            font-size: 13px;
+        }
+        
+        .dado-item strong {
+            color: #0f172a;
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        .tabela-valores {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .tabela-valores td {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+        
+        .tabela-valores td:last-child {
+            text-align: right;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        
+        .tabela-valores .total {
+            background: #f0fdf4;
+            font-size: 16px;
+            font-weight: 700;
+            color: #065f46;
+        }
+        
+        .tabela-valores .taxa {
+            font-style: italic;
+            color: #64748b;
+            font-size: 13px;
+        }
+        
+        .area-assinatura {
+            background: #fffbeb;
+            border: 2px dashed #f59e0b;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .area-assinatura h3 {
+            color: #92400e;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .assinatura-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .assinatura-item {
+            text-align: center;
+        }
+        
+        .assinatura-item label {
+            display: block;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .assinatura-item input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .assinatura-item input:focus {
+            outline: none;
+            border-color: #0284c7;
+        }
+        
+        .checkbox-termos {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f9ff;
+            border-radius: 8px;
+        }
+        
+        .checkbox-termos input {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+        }
+        
+        .checkbox-termos label {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+        }
+        
+        .btn-assinar {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn-assinar:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-assinar:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status-liberado {
+            display: none;
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .status-liberado h2 {
+            color: #065f46;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .status-liberado p {
+            color: #047857;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho do Contrato -->
+        <div class="header-contrato">
+            <div class="logo">🛠️ ResolveApp</div>
+            <div class="titulo-contrato">CONTRATO DE PRESTAÇÃO DE SERVIÇOS</div>
+            <!-- A data e hora serão preenchidas automaticamente aqui -->
+            <div class="numero-contrato" id="dataHoraContrato">Carregando data e hora...</div>
+        </div>
+
+        <!-- Partes Envolvidas -->
+        <div class="secao">
+            <h3> PARTES ENVOLVIDAS</h3>
+            <div class="dados-partes">
+                <div class="dado-item">
+                    <strong>CONTRATANTE (Cliente)</strong>
+                    Maria da Silva<br>
+                    CPF: 123.456.789-00<br>
+                    Jardim Aurélia, Campinas-SP
+                </div>
+                <div class="dado-item">
+                    <strong>CONTRATADO (Profissional)</strong>
+                    João Eletricista<br>
+                    CPF: 987.654.321-00<br>
+                    MEI Ativo - Campinas-SP
+                </div>
+            </div>
+        </div>
+
+        <!-- Objeto do Contrato -->
+        <div class="secao">
+            <h3> OBJETO DO CONTRATO</h3>
+            <p><strong>Serviço:</strong> Troca de torneira da cozinha com vazamento persistente</p>
+            <p><strong>Local de execução:</strong> Rua das Flores, 123 - Jardim Aurélia, Campinas-SP</p>
+            <p><strong>Prazo de execução:</strong> A combinar entre as partes (início em horário comercial)</p>
+        </div>
+
+        <!-- Valores -->
+        <div class="secao">
+            <h3>💰 VALORES ACORDADOS</h3>
+            <table class="tabela-valores">
+                <tr>
+                    <td>Mão de obra</td>
+                    <td>R$ 120,00</td>
+                </tr>
+                <tr>
+                    <td>Deslocamento</td>
+                    <td>R$ 20,00</td>
+                </tr>
+                <tr>
+                    <td>Dificuldade extra (escada)</td>
+                    <td>R$ 30,00</td>
+                </tr>
+                <tr>
+                    <td>Serviço urgente</td>
+                    <td>R$ 40,00</td>
+                </tr>
+                <tr class="taxa">
+                    <td>Taxa ResolveApp (já inclusa)</td>
+                    <td>R$ 12,00</td>
+                </tr>
+                <tr class="total">
+                    <td>TOTAL A PAGAR</td>
+                    <td>R$ 210,00</td>
+                </tr>
+            </table>
+            <p style="margin-top: 10px; font-size: 13px; color: #64748b;">
+                * Pagamento a ser realizado diretamente ao profissional após conclusão do serviço.
+            </p>
+        </div>
+
+        <!-- Direitos e Deveres -->
+        <div class="secao">
+            <h3>⚖️ DIREITOS E DEVERES</h3>
+            
+            <p><strong>Direitos do Cliente:</strong></p>
+            <ul>
+                <li>Receber o serviço conforme descrito no objeto</li>
+                <li>Receber Nota Fiscal do serviço prestado</li>
+                <li>Garantia de 90 dias sobre a mão de obra</li>
+            </ul>
+            
+            <p style="margin-top: 15px;"><strong>Deveres do Cliente:</strong></p>
+            <ul>
+                <li>Pagar o valor acordado no prazo combinado</li>
+                <li>Fornecer acesso ao local no horário agendado</li>
+                <li>Informar previamente sobre condições especiais do local</li>
+            </ul>
+            
+            <p style="margin-top: 15px;"><strong>Direitos do Profissional:</strong></p>
+            <ul>
+                <li>Receber o pagamento conforme acordado</li>
+                <li>Executar o serviço em condições seguras</li>
+                <li>Recusar serviços que ofereçam risco à sua integridade</li>
+            </ul>
+            
+            <p style="margin-top: 15px;"><strong>Deveres do Profissional:</strong></p>
+            <ul>
+                <li>Executar o serviço no prazo e qualidade acordados</li>
+                <li>Utilizar materiais e ferramentas adequadas</li>
+                <li>Emitir Nota Fiscal do serviço prestado</li>
+                <li>Zelar pela integridade do local de trabalho</li>
+            </ul>
+        </div>
+
+        <!-- Área de Assinatura -->
+        <div class="area-assinatura" id="areaAssinatura">
+            <h3>✍️ ASSINATURAS DIGITAIS</h3>
+            
+            <div class="assinatura-box">
+                <div class="assinatura-item">
+                    <label>Nome do Cliente</label>
+                    <input type="text" id="nomeCliente" placeholder="Digite seu nome completo">
+                </div>
+                <div class="assinatura-item">
+                    <label>CPF do Cliente</label>
+                    <input type="text" id="cpfCliente" placeholder="000.000.000-00">
+                </div>
+            </div>
+            
+            <div class="assinatura-box">
+                <div class="assinatura-item">
+                    <label>Nome do Profissional</label>
+                    <input type="text" id="nomeProfissional" placeholder="Digite seu nome completo">
+                </div>
+                <div class="assinatura-item">
+                    <label>CPF do Profissional</label>
+                    <input type="text" id="cpfProfissional" placeholder="000.000.000-00">
+                </div>
+            </div>
+            
+            <div class="checkbox-termos">
+                <input type="checkbox" id="aceiteTermos" onchange="habilitarBotao()">
+                <label for="aceiteTermos">
+                    Li e concordo com todos os termos deste contrato, incluindo valores, prazos, direitos e deveres descritos acima. Declaro que as informações prestadas são verdadeiras.
+                </label>
+            </div>
+            
+            <button class="btn-assinar" id="btnAssinar" disabled onclick="assinarContrato()">
+                🔒 ASSINAR E LIBERAR SERVIÇO
+            </button>
+        </div>
+
+        <!-- Status de Serviço Liberado -->
+        <div class="status-liberado" id="statusLiberado">
+            <h2>✅ SERVIÇO LIBERADO!</h2>
+            <p>Contrato assinado por ambas as partes.</p>
+            <p style="margin-top: 10px;">Uma cópia foi enviada para o e-mail de cada parte.</p>
+            <p style="margin-top: 15px; font-weight: 600; color: #065f46;">
+                O profissional já pode iniciar o serviço!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Função mágica que pega a data e hora do seu computador
+        function atualizarDataHora() {
+            const agora = new Date();
+            const data = agora.toLocaleDateString('pt-BR');
+            const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('dataHoraContrato').innerText = `Contrato nº RA-2026-0001 | Gerado em ${data} às ${hora}`;
+        }
+
+        // Executa a função assim que a página abre
+        atualizarDataHora();
+
+        function habilitarBotao() {
+            const aceite = document.getElementById('aceiteTermos').checked;
+            const btn = document.getElementById('btnAssinar');
+            btn.disabled = !aceite;
+        }
+        
+        function assinarContrato() {
+            const nomeCliente = document.getElementById('nomeCliente').value;
+            const cpfCliente = document.getElementById('cpfCliente').value;
+            const nomeProfissional = document.getElementById('nomeProfissional').value;
+            const cpfProfissional = document.getElementById('cpfProfissional').value;
+            
+            if (!nomeCliente || !cpfCliente || !nomeProfissional || !cpfProfissional) {
+                alert('Por favor, preencha todos os campos de nome e CPF.');
+                return;
+            }
+            
+            // Esconde área de assinatura e mostra status liberado
+            document.getElementById('areaAssinatura').style.display = 'none';
+            document.getElementById('statusLiberado').style.display = 'block';
+            
+            // Rola a tela para o topo do status
+            document.getElementById('statusLiberado').scrollIntoView({ behavior: 'smooth' });
+            
+            alert('🎉 Contrato assinado com sucesso!\n\nServiço liberado para execução.');
+        }
+    </script>
+</body>
+</html>

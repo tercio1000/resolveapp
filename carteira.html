@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResolveApp - Carteira Digital</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 5px;
+        }
+        
+        .subtitulo {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+        }
+        
+        /* Card do Saldo */
+        .card-saldo {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+        
+        .saldo-label {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .saldo-valor {
+            font-size: 48px;
+            font-weight: 800;
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+        
+        .saldo-info {
+            color: #64748b;
+            font-size: 13px;
+        }
+        
+        .saldo-info strong {
+            color: #0284c7;
+        }
+        
+        /* Card de Recarga */
+        .card-recarga {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .card-recarga h3 {
+            color: #0f172a;
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .valores-rapidos {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn-valor {
+            padding: 15px;
+            background: #f0f9ff;
+            border: 2px solid #e0f2fe;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #0284c7;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-valor:hover {
+            background: #0284c7;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-valor.selected {
+            background: #0284c7;
+            color: white;
+            border-color: #0284c7;
+        }
+        
+        .recarga-personalizada {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #f1f5f9;
+        }
+        
+        .recarga-personalizada label {
+            display: block;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .input-recarga {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .input-recarga:focus {
+            outline: none;
+            border-color: #0284c7;
+        }
+        
+        .mensagem-validacao {
+            font-size: 13px;
+            margin-bottom: 15px;
+            padding: 8px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .mensagem-validacao.erro {
+            background: #fee2e2;
+            color: #991b1b;
+            display: block;
+        }
+        
+        .mensagem-validacao.sucesso {
+            background: #d1fae5;
+            color: #065f46;
+            display: block;
+        }
+        
+        .btn-recarregar {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn-recarregar:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-recarregar:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Histórico */
+        .card-historico {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .card-historico h3 {
+            color: #0f172a;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .historico-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .historico-item:last-child {
+            border-bottom: none;
+        }
+        
+        .historico-info {
+            flex: 1;
+        }
+        
+        .historico-titulo {
+            color: #0f172a;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .historico-data {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+        
+        .historico-valor {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .historico-valor.entrada {
+            color: #10b981;
+        }
+        
+        .historico-valor.saida {
+            color: #ef4444;
+        }
+        
+        .vazio {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🛠️ ResolveApp</div>
+            <div class="subtitulo">Carteira Digital do Profissional</div>
+        </div>
+
+        <!-- Saldo Atual -->
+        <div class="card-saldo">
+            <div class="saldo-label">Saldo Disponível</div>
+            <div class="saldo-valor" id="saldoAtual">R$ 0,00</div>
+            <div class="saldo-info">
+                Cada serviço fechado custa <strong>R$ 12,00</strong>
+            </div>
+        </div>
+
+        <!-- Recarga -->
+        <div class="card-recarga">
+            <h3>💳 Recarregar Créditos</h3>
+            
+            <div class="valores-rapidos">
+                <button class="btn-valor" onclick="selecionarValor(12)">R$ 12</button>
+                <button class="btn-valor" onclick="selecionarValor(24)">R$ 24</button>
+                <button class="btn-valor" onclick="selecionarValor(36)">R$ 36</button>
+                <button class="btn-valor" onclick="selecionarValor(48)">R$ 48</button>
+                <button class="btn-valor" onclick="selecionarValor(60)">R$ 60</button>
+                <button class="btn-valor" onclick="selecionarValor(120)">R$ 120</button>
+            </div>
+            
+            <div class="recarga-personalizada">
+                <label for="valorPersonalizado">Ou digite um valor personalizado:</label>
+                <input type="number" id="valorPersonalizado" class="input-recarga" placeholder="Mínimo R$ 12,00" min="12" step="12" oninput="validarValor()">
+                <div class="mensagem-validacao" id="mensagemValidacao"></div>
+                <button class="btn-recarregar" id="btnRecarregar" disabled onclick="recarregar()">
+                    💰 RECARREGAR VIA PIX
+                </button>
+            </div>
+        </div>
+
+        <!-- Histórico -->
+        <div class="card-historico">
+            <h3> Histórico de Transações</h3>
+            <div id="historicoLista">
+                <div class="vazio">Nenhuma transação ainda</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let saldo = 0;
+        let valorSelecionado = 0;
+        let historico = [];
+
+        function selecionarValor(valor) {
+            valorSelecionado = valor;
+            document.getElementById('valorPersonalizado').value = '';
+            
+            // Remove seleção de todos os botões
+            document.querySelectorAll('.btn-valor').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Adiciona seleção ao botão clicado
+            event.target.classList.add('selected');
+            
+            // Habilita botão de recarregar
+            document.getElementById('btnRecarregar').disabled = false;
+            
+            // Esconde mensagem de validação
+            document.getElementById('mensagemValidacao').style.display = 'none';
+        }
+
+        function validarValor() {
+            const valor = parseFloat(document.getElementById('valorPersonalizado').value);
+            const mensagem = document.getElementById('mensagemValidacao');
+            const btn = document.getElementById('btnRecarregar');
+            
+            // Remove seleção dos botões rápidos
+            document.querySelectorAll('.btn-valor').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            if (!valor || valor < 12) {
+                mensagem.className = 'mensagem-validacao erro';
+                mensagem.innerText = '⚠️ Valor mínimo é R$ 12,00';
+                btn.disabled = true;
+                valorSelecionado = 0;
+            } else if (valor % 12 !== 0) {
+                mensagem.className = 'mensagem-validacao erro';
+                mensagem.innerText = '⚠️ O valor deve ser múltiplo de R$ 12,00';
+                btn.disabled = true;
+                valorSelecionado = 0;
+            } else {
+                mensagem.className = 'mensagem-validacao sucesso';
+                mensagem.innerText = `✅ Valor válido: R$ ${valor.toFixed(2).replace('.', ',')} (${valor / 12} serviços)`;
+                btn.disabled = false;
+                valorSelecionado = valor;
+            }
+        }
+
+        function recarregar() {
+            if (valorSelecionado < 12) {
+                alert('Selecione ou digite um valor válido!');
+                return;
+            }
+            
+            // Adiciona ao saldo
+            saldo += valorSelecionado;
+            atualizarSaldo();
+            
+            // Adiciona ao histórico
+            const agora = new Date();
+            const data = agora.toLocaleDateString('pt-BR');
+            const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            
+            historico.unshift({
+                tipo: 'entrada',
+                titulo: `Recarga via Pix`,
+                data: `${data} às ${hora}`,
+                valor: valorSelecionado
+            });
+            
+            atualizarHistorico();
+            
+            // Feedback visual
+            alert(`✅ Recarga de R$ ${valorSelecionado.toFixed(2).replace('.', ',')} realizada com sucesso!\n\nSeu novo saldo: R$ ${saldo.toFixed(2).replace('.', ',')}`);
+            
+            // Reseta formulário
+            document.getElementById('valorPersonalizado').value = '';
+            document.querySelectorAll('.btn-valor').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById('btnRecarregar').disabled = true;
+            document.getElementById('mensagemValidacao').style.display = 'none';
+            valorSelecionado = 0;
+        }
+
+        function atualizarSaldo() {
+            document.getElementById('saldoAtual').innerText = `R$ ${saldo.toFixed(2).replace('.', ',')}`;
+        }
+
+        function atualizarHistorico() {
+            const lista = document.getElementById('historicoLista');
+            
+            if (historico.length === 0) {
+                lista.innerHTML = '<div class="vazio">Nenhuma transação ainda</div>';
+                return;
+            }
+            
+            lista.innerHTML = historico.map(item => `
+                <div class="historico-item">
+                    <div class="historico-info">
+                        <div class="historico-titulo">${item.titulo}</div>
+                        <div class="historico-data">${item.data}</div>
+                    </div>
+                    <div class="historico-valor ${item.tipo}">
+                        ${item.tipo === 'entrada' ? '+' : '-'} R$ ${item.valor.toFixed(2).replace('.', ',')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Função para simular cobrança de serviço (para teste)
+        function cobrarServico() {
+            if (saldo < 12) {
+                alert('⚠️ Saldo insuficiente! Recarregue sua carteira para continuar recebendo serviços.');
+                return;
+            }
+            
+            saldo -= 12;
+            atualizarSaldo();
+            
+            const agora = new Date();
+            const data = agora.toLocaleDateString('pt-BR');
+            const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            
+            historico.unshift({
+                tipo: 'saida',
+                titulo: 'Taxa por serviço concluído',
+                data: `${data} às ${hora}`,
+                valor: 12
+            });
+            
+            atualizarHistorico();
+            
+            alert('✅ Serviço concluído! Taxa de R$ 12,00 debitada da sua carteira.');
+        }
+
+        // Adiciona função de teste no console (para você testar)
+        console.log('Para simular cobrança de serviço, digite: cobrarServico()');
+    </script>
+</body>
+</html>

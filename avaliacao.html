@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResolveApp - Avaliar Serviço</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 35px 30px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0284c7;
+            margin-bottom: 8px;
+        }
+        
+        .subtitulo {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        /* Card do Profissional */
+        .profissional-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            background: #e0f2fe;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .info-profissional h4 {
+            color: #0f172a;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .info-profissional p {
+            color: #64748b;
+            font-size: 13px;
+        }
+        
+        /* Estrelas */
+        .secao-avaliacao {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .pergunta {
+            color: #0f172a;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .estrelas {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .estrela {
+            font-size: 40px;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+        
+        .estrela:hover {
+            transform: scale(1.2);
+        }
+        
+        .estrela.ativa {
+            color: #fbbf24; /* Amarelo ouro */
+        }
+
+        .texto-avaliacao {
+            color: #0284c7;
+            font-weight: 600;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        /* Etiquetas Rápidas */
+        .etiquetas-titulo {
+            color: #475569;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .etiquetas-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .etiqueta {
+            padding: 8px 16px;
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .etiqueta:hover {
+            border-color: #0284c7;
+        }
+
+        .etiqueta.selecionada {
+            background: #e0f2fe;
+            border-color: #0284c7;
+            color: #0284c7;
+            font-weight: 600;
+        }
+        
+        /* Campo de Texto */
+        .campo-texto {
+            margin-bottom: 20px;
+        }
+        
+        .campo-texto label {
+            display: block;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .campo-texto textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .campo-texto textarea:focus {
+            outline: none;
+            border-color: #0284c7;
+        }
+        
+        .btn-enviar {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn-enviar:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-enviar:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Mensagem de Sucesso */
+        .sucesso {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .sucesso h2 {
+            color: #065f46;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .sucesso p {
+            color: #047857;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="containerForm">
+        <div class="header">
+            <div class="logo">🛠️ ResolveApp</div>
+            <div class="subtitulo">Como foi sua experiência?</div>
+        </div>
+
+        <!-- Card do Profissional -->
+        <div class="profissional-card">
+            <div class="avatar">👷♂️</div>
+            <div class="info-profissional">
+                <h4>João Eletricista</h4>
+                <p>Serviço: Troca de resistência do chuveiro</p>
+            </div>
+        </div>
+
+        <!-- Estrelas -->
+        <div class="secao-avaliacao">
+            <div class="pergunta">Qual nota você dá para o serviço?</div>
+            <div class="estrelas" id="estrelasContainer">
+                <span class="estrela" data-valor="1" onclick="clicarEstrela(1)">★</span>
+                <span class="estrela" data-valor="2" onclick="clicarEstrela(2)">★</span>
+                <span class="estrela" data-valor="3" onclick="clicarEstrela(3)">★</span>
+                <span class="estrela" data-valor="4" onclick="clicarEstrela(4)">★</span>
+                <span class="estrela" data-valor="5" onclick="clicarEstrela(5)">★</span>
+            </div>
+            <div class="texto-avaliacao" id="textoNota">Toque nas estrelas para avaliar</div>
+        </div>
+
+        <!-- Etiquetas Rápidas -->
+        <div class="etiquetas-titulo">O que mais te agradou? (Selecione quantas quiser)</div>
+        <div class="etiquetas-container">
+            <div class="etiqueta" onclick="toggleEtiqueta(this)">⏰ Pontual</div>
+            <div class="etiqueta" onclick="toggleEtiqueta(this)">💰 Preço Justo</div>
+            <div class="etiqueta" onclick="toggleEtiqueta(this)">🧹 Limpou o local</div>
+            <div class="etiqueta" onclick="toggleEtiqueta(this)">😊 Muito educado</div>
+            <div class="etiqueta" onclick="toggleEtiqueta(this)">⚡ Resolveu rápido</div>
+            <div class="etiqueta" onclick="toggleEtiqueta(this)">🛠️ Serviço de qualidade</div>
+        </div>
+
+        <!-- Comentário -->
+        <div class="campo-texto">
+            <label for="comentario">Quer contar mais detalhes? (Opcional)</label>
+            <textarea id="comentario" placeholder="Ex: O João chegou no horário, foi super educado e ainda me deu dicas de como evitar que a resistência queime de novo..."></textarea>
+        </div>
+
+        <button class="btn-enviar" id="btnEnviar" disabled onclick="enviarAvaliacao()">
+            ENVIAR AVALIAÇÃO
+        </button>
+    </div>
+
+    <!-- Tela de Sucesso -->
+    <div class="container sucesso" id="containerSucesso">
+        <div style="font-size: 60px; margin-bottom: 15px;">🎉</div>
+        <h2>Obrigado pelo seu feedback!</h2>
+        <p>Sua avaliação ajuda outros clientes a encontrarem bons profissionais e valoriza o trabalho de quem faz bem feito.</p>
+        <p style="margin-top: 20px; font-size: 13px; color: #64748b;">O ResolveApp agradece!</p>
+    </div>
+
+    <script>
+        let notaAtual = 0;
+        const textosNotas = [
+            "", 
+            " Péssimo", 
+            " Ruim", 
+            "😐 Regular", 
+            "🙂 Bom", 
+            " Excelente!"
+        ];
+
+        function clicarEstrela(valor) {
+            notaAtual = valor;
+            
+            // Atualiza visual das estrelas
+            const estrelas = document.querySelectorAll('.estrela');
+            estrelas.forEach((estrela, index) => {
+                if (index < valor) {
+                    estrela.classList.add('ativa');
+                } else {
+                    estrela.classList.remove('ativa');
+                }
+            });
+
+            // Atualiza texto
+            document.getElementById('textoNota').innerText = textosNotas[valor];
+            
+            // Habilita o botão de enviar
+            document.getElementById('btnEnviar').disabled = false;
+        }
+
+        function toggleEtiqueta(elemento) {
+            elemento.classList.toggle('selecionada');
+        }
+
+        function enviarAvaliacao() {
+            if (notaAtual === 0) {
+                alert('Por favor, selecione pelo menos uma estrela!');
+                return;
+            }
+
+            // Esconde o formulário e mostra o sucesso
+            document.getElementById('containerForm').style.display = 'none';
+            document.getElementById('containerSucesso').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

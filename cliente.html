@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResolveApp</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0284c7;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 18px;
+            font-size: 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            color: #0f172a;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #0284c7;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1);
+        }
+        
+        .btn-continuar {
+            width: 100%;
+            padding: 18px;
+            background: #0284c7;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+        
+        .btn-continuar:hover {
+            background: #0369a1;
+            transform: translateY(-2px);
+        }
+
+        /* Área de resposta inteligente (escondida inicialmente) */
+        .smart-response {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            background: #f0f9ff;
+            border-radius: 12px;
+            border-left: 4px solid #0284c7;
+            text-align: left;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .smart-response h3 {
+            color: #0284c7;
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .smart-response p {
+            color: #334155;
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .btn-confirm {
+            width: 100%;
+            padding: 14px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-confirm:hover { background: #059669; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🛠️ ResolveApp</div>
+        <p class="subtitle">Qual é o objeto principal da sua demanda?</p>
+        
+        <div class="input-group">
+            <input type="text" id="demandaInput" placeholder="Ex: Torneira, Projeto, Faxina...">
+        </div>
+        
+        <button class="btn-continuar" onclick="analisarDemanda()">CONTINUAR</button>
+
+        <!-- Resposta Inteligente do App -->
+        <div class="smart-response" id="respostaInteligente">
+            <h3>🤖 Entendi! Categoria: <span id="categoriaNome"></span></h3>
+            <p id="textoSugerido"></p>
+            <button class="btn-confirm" onclick="publicarDemanda()">✅ CONFIRMAR E PUBLICAR</button>
+        </div>
+    </div>
+
+    <script>
+        function analisarDemanda() {
+            const texto = document.getElementById('demandaInput').value.toLowerCase();
+            const respostaDiv = document.getElementById('respostaInteligente');
+            const categoriaSpan = document.getElementById('categoriaNome');
+            const textoSugerido = document.getElementById('textoSugerido');
+
+            if (texto === "") {
+                alert("Por favor, digite algo sobre sua demanda!");
+                return;
+            }
+
+            // Lógica simples de "Inteligência" do App
+            if (texto.includes("torneira") || texto.includes("vazamento") || texto.includes("pia")) {
+                categoriaSpan.innerText = "Reparos Hidráulicos";
+                textoSugerido.innerText = "Sugestão de descrição: 'Preciso de um profissional para avaliar e reparar vazamento/troca de torneira. Favor informar se traz as peças ou se já possuo o material.'";
+            } else if (texto.includes("projeto") || texto.includes("estrutura") || texto.includes("laudo") || texto.includes("art")) {
+                categoriaSpan.innerText = "Serviços Técnicos / Engenharia";
+                textoSugerido.innerText = "Sugestão de descrição: 'Demanda para projeto estrutural/laudo técnico com ART. (O profissional entrará em contato para solicitar detalhes como área da planta e cidade da obra).'";
+            } else if (texto.includes("faxina") || texto.includes("limpeza") || texto.includes("diarista")) {
+                categoriaSpan.innerText = "Serviços Domésticos";
+                textoSugerido.innerText = "Sugestão de descrição: 'Busco profissional para limpeza residencial (ex: 2 vezes por semana). Favor informar disponibilidade e se traz produtos.'";
+            } else {
+                categoriaSpan.innerText = "Serviços Gerais";
+                textoSugerido.innerText = "Sugestão de descrição: 'Demanda geral relacionada a: " + document.getElementById('demandaInput').value + ". Aguardo contato de profissionais qualificados para orçamento.'";
+            }
+
+            // Mostra a resposta com uma animação suave
+            respostaDiv.style.display = "block";
+        }
+
+        function publicarDemanda() {
+            alert("🎉 Demanda publicada com sucesso! Os profissionais da categoria já foram notificados.");
+            // Aqui no futuro entrará o código para salvar no Banco de Dados
+        }
+    </script>
+</body>
+</html>
