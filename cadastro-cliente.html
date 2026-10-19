@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ResolveApp - Cadastro de Cliente</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -95,18 +94,6 @@
             min-height: 20px;
         }
         
-        #debug {
-            margin-top: 20px;
-            padding: 10px;
-            background: #f1f5f9;
-            border-radius: 8px;
-            font-size: 11px;
-            font-family: monospace;
-            color: #334155;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        
         .link-voltar {
             text-align: center;
             margin-top: 20px;
@@ -145,40 +132,12 @@
         <button class="btn" id="btnSalvar" onclick="salvarCliente()">SALVAR NO BANCO DE DADOS</button>
         <div id="mensagem"></div>
         
-        <div id="debug"></div>
-        
         <div class="link-voltar">
             <a href="login.html">← Voltar para o Login</a>
         </div>
     </div>
 
     <script>
-        // CONFIGURAÇÃO DO SUPABASE
-        const supabaseUrl = 'https://cbbbbzexavckqqcvzvs.supabase.co';
-        const supabaseKey = 'sb_publishable_385cnB8yy7vbfjvsHPsfDg_F0WhMYKV';
-        
-        const debugDiv = document.getElementById('debug');
-        
-        function log(msg) {
-            console.log(msg);
-            debugDiv.innerHTML += msg + '<br>';
-        }
-        
-        log('🔧 Iniciando...');
-        log('URL: ' + supabaseUrl);
-        log('Key: ' + supabaseKey.substring(0, 20) + '...');
-        
-        // Verificar se a biblioteca carregou
-        if (typeof window.supabase === 'undefined') {
-            log('❌ Biblioteca Supabase não carregou!');
-        } else {
-            log('✅ Biblioteca Supabase carregada');
-        }
-        
-        // Criar cliente
-        const db = window.supabase.createClient(supabaseUrl, supabaseKey);
-        log('✅ Cliente Supabase criado');
-
         async function salvarCliente() {
             const btn = document.getElementById('btnSalvar');
             const msg = document.getElementById('mensagem');
@@ -186,8 +145,6 @@
             const nome = document.getElementById('nome').value.trim();
             const email = document.getElementById('email').value.trim();
             const telefone = document.getElementById('telefone').value.trim();
-
-            log('📝 Dados: ' + nome + ', ' + email + ', ' + telefone);
 
             if (!nome || !email || !telefone) {
                 msg.style.color = '#ef4444';
@@ -198,38 +155,33 @@
             btn.disabled = true;
             btn.innerText = 'Salvando...';
             msg.innerText = '';
-            log('🔄 Tentando salvar...');
 
             try {
-                log('📡 Fazendo requisição para Supabase...');
-                
-                const { data, error } = await db
-                    .from('clientes')
-                    .insert([{ 
-                        nome: nome, 
-                        email: email, 
-                        telefone: telefone 
-                    }]);
+                // AQUI ESTÁ A MÁGICA: fala com a Vercel, não direto com o Supabase!
+                const resposta = await fetch('/api/cadastro', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ nome, email, telefone })
+                });
 
-                log('📥 Resposta recebida');
+                const resultado = await resposta.json();
 
-                if (error) {
-                    log('❌ Erro: ' + JSON.stringify(error));
-                    msg.style.color = '#ef4444';
-                    msg.innerText = '❌ Erro: ' + error.message;
-                } else {
-                    log('✅ Sucesso! Dados: ' + JSON.stringify(data));
+                if (resposta.ok && resultado.sucesso) {
                     msg.style.color = '#009e60';
-                    msg.innerText = '✅ Cliente salvo com sucesso!';
+                    msg.innerText = '✅ Cliente salvo com sucesso no banco de dados!';
                     
                     document.getElementById('nome').value = '';
                     document.getElementById('email').value = '';
                     document.getElementById('telefone').value = '';
+                } else {
+                    msg.style.color = '#ef4444';
+                    msg.innerText = '❌ Erro: ' + (resultado.error || 'Erro desconhecido');
                 }
-            } catch (err) {
-                log(' Erro inesperado: ' + err.message);
+            } catch (erro) {
                 msg.style.color = '#ef4444';
-                msg.innerText = '❌ Erro de conexão: ' + err.message;
+                msg.innerText = '❌ Erro de conexão.';
             }
 
             btn.disabled = false;
