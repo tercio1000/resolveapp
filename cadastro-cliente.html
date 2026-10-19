@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ResolveApp - Cadastro de Cliente</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -62,7 +62,6 @@
             border: 2px solid #e2e8f0;
             border-radius: 8px;
             font-size: 15px;
-            transition: border-color 0.2s;
         }
         
         .campo input:focus {
@@ -81,17 +80,11 @@
             font-weight: 700;
             cursor: pointer;
             margin-top: 10px;
-            transition: transform 0.2s;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
         }
         
         .btn:disabled {
             background: #cbd5e1;
             cursor: not-allowed;
-            transform: none;
         }
         
         #mensagem {
@@ -100,6 +93,18 @@
             font-size: 14px;
             font-weight: 600;
             min-height: 20px;
+        }
+        
+        #debug {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            font-size: 11px;
+            font-family: monospace;
+            color: #334155;
+            max-height: 150px;
+            overflow-y: auto;
         }
         
         .link-voltar {
@@ -112,10 +117,6 @@
             text-decoration: none;
             font-size: 14px;
             font-weight: 600;
-        }
-        
-        .link-voltar a:hover {
-            text-decoration: underline;
         }
     </style>
 </head>
@@ -144,6 +145,8 @@
         <button class="btn" id="btnSalvar" onclick="salvarCliente()">SALVAR NO BANCO DE DADOS</button>
         <div id="mensagem"></div>
         
+        <div id="debug"></div>
+        
         <div class="link-voltar">
             <a href="login.html">← Voltar para o Login</a>
         </div>
@@ -154,32 +157,52 @@
         const supabaseUrl = 'https://cbbbbzexavckqqcvzvs.supabase.co';
         const supabaseKey = 'sb_publishable_385cnB8yy7vbfjvsHPsfDg_F0WhMYKV';
         
-        // Criar cliente Supabase (usando 'db' para evitar conflito com a biblioteca)
+        const debugDiv = document.getElementById('debug');
+        
+        function log(msg) {
+            console.log(msg);
+            debugDiv.innerHTML += msg + '<br>';
+        }
+        
+        log('🔧 Iniciando...');
+        log('URL: ' + supabaseUrl);
+        log('Key: ' + supabaseKey.substring(0, 20) + '...');
+        
+        // Verificar se a biblioteca carregou
+        if (typeof window.supabase === 'undefined') {
+            log('❌ Biblioteca Supabase não carregou!');
+        } else {
+            log('✅ Biblioteca Supabase carregada');
+        }
+        
+        // Criar cliente
         const db = window.supabase.createClient(supabaseUrl, supabaseKey);
+        log('✅ Cliente Supabase criado');
 
         async function salvarCliente() {
             const btn = document.getElementById('btnSalvar');
             const msg = document.getElementById('mensagem');
             
-            // Pegar valores dos campos
             const nome = document.getElementById('nome').value.trim();
             const email = document.getElementById('email').value.trim();
             const telefone = document.getElementById('telefone').value.trim();
 
-            // Validação
+            log('📝 Dados: ' + nome + ', ' + email + ', ' + telefone);
+
             if (!nome || !email || !telefone) {
                 msg.style.color = '#ef4444';
                 msg.innerText = '⚠️ Preencha todos os campos!';
                 return;
             }
 
-            // Mudar estado do botão
             btn.disabled = true;
             btn.innerText = 'Salvando...';
             msg.innerText = '';
+            log('🔄 Tentando salvar...');
 
             try {
-                // Enviar dados para o Supabase
+                log('📡 Fazendo requisição para Supabase...');
+                
                 const { data, error } = await db
                     .from('clientes')
                     .insert([{ 
@@ -188,30 +211,27 @@
                         telefone: telefone 
                     }]);
 
-                // Verificar erro
+                log('📥 Resposta recebida');
+
                 if (error) {
-                    console.error('Erro do Supabase:', error);
+                    log('❌ Erro: ' + JSON.stringify(error));
                     msg.style.color = '#ef4444';
-                    msg.innerText = '❌ Erro ao salvar: ' + error.message;
+                    msg.innerText = '❌ Erro: ' + error.message;
                 } else {
-                    // Sucesso!
+                    log('✅ Sucesso! Dados: ' + JSON.stringify(data));
                     msg.style.color = '#009e60';
-                    msg.innerText = '✅ Cliente salvo com sucesso no banco de dados!';
+                    msg.innerText = '✅ Cliente salvo com sucesso!';
                     
-                    // Limpar campos
                     document.getElementById('nome').value = '';
                     document.getElementById('email').value = '';
                     document.getElementById('telefone').value = '';
-                    
-                    console.log('Dados salvos:', data);
                 }
             } catch (err) {
-                console.error('Erro inesperado:', err);
+                log(' Erro inesperado: ' + err.message);
                 msg.style.color = '#ef4444';
-                msg.innerText = '❌ Erro de conexão. Verifique sua internet.';
+                msg.innerText = '❌ Erro de conexão: ' + err.message;
             }
 
-            // Restaurar botão
             btn.disabled = false;
             btn.innerText = 'SALVAR NO BANCO DE DADOS';
         }
