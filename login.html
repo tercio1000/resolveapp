@@ -242,29 +242,31 @@
         <div class="divisor">ou</div>
 
         <div class="link-cadastro">
-            Ainda não tem conta? <a href="cadastro-profissional.html">Cadastre-se aqui</a>
+            Ainda não tem conta? <a href="cadastro-cliente.html" id="linkCadastro">Cadastre-se aqui</a>
+
         </div>
-    </div>
 
     <script>
         let tipoUsuario = 'cliente';
 
         function selecionarTipo(tipo) {
-            tipoUsuario = tipo;
-            
-            // Atualiza visual dos botões
-            document.getElementById('btnCliente').classList.remove('ativo');
-            document.getElementById('btnProfissional').classList.remove('ativo');
-            
-            if (tipo === 'cliente') {
-                document.getElementById('btnCliente').classList.add('ativo');
-            } else {
-                document.getElementById('btnProfissional').classList.add('ativo');
-            }
-            
-            // Esconde mensagem de erro
-            document.getElementById('mensagemErro').style.display = 'none';
-        }
+    tipoUsuario = tipo;
+    
+    // Atualiza visual dos botões
+    document.getElementById('btnCliente').classList.remove('ativo');
+    document.getElementById('btnProfissional').classList.remove('ativo');
+    
+    if (tipo === 'cliente') {
+        document.getElementById('btnCliente').classList.add('ativo');
+        document.getElementById('linkCadastro').href = 'cadastro-cliente.html';
+    } else {
+        document.getElementById('btnProfissional').classList.add('ativo');
+        document.getElementById('linkCadastro').href = 'cadastro-profissional.html';
+    }
+    
+    // Esconde mensagem de erro
+    document.getElementById('mensagemErro').style.display = 'none';
+}
 
         function fazerLogin() {
             const email = document.getElementById('email').value;
