@@ -6,82 +6,212 @@
     <title>ResolveApp - Cadastro de Cliente</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #0056b3 0%, #009e60 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 100%; max-width: 400px; }
-        h2 { color: #0056b3; text-align: center; margin-bottom: 20px; }
-        .campo { margin-bottom: 15px; }
-        .campo label { display: block; margin-bottom: 5px; color: #334155; font-weight: 600; font-size: 14px; }
-        .campo input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
-        .campo input:focus { outline: none; border-color: #0056b3; }
-        .btn { width: 100%; padding: 14px; background: #009e60; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 10px; }
-        .btn:hover { background: #008a52; }
-        .btn:disabled { background: #cbd5e1; cursor: not-allowed; }
-        #mensagem { text-align: center; margin-top: 15px; font-size: 14px; font-weight: 600; min-height: 20px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0056b3 0%, #009e60 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 35px 30px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0, 86, 179, 0.25);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0056b3;
+            margin-bottom: 5px;
+        }
+        
+        .subtitulo {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .campo {
+            margin-bottom: 15px;
+        }
+        
+        .campo label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .campo input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+        
+        .campo input:focus {
+            outline: none;
+            border-color: #0056b3;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #009e60 0%, #008a52 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        #mensagem {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            min-height: 20px;
+        }
+        
+        .link-voltar {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .link-voltar a {
+            color: #0056b3;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .link-voltar a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>🛠️ Cadastro de Cliente</h2>
+        <div class="header">
+            <div class="logo">🛠️ ResolveApp</div>
+            <div class="subtitulo">Cadastro de Cliente</div>
+        </div>
         
         <div class="campo">
-            <label>Nome Completo</label>
+            <label for="nome">Nome Completo</label>
             <input type="text" id="nome" placeholder="Ex: Maria da Silva">
         </div>
         
         <div class="campo">
-            <label>E-mail</label>
+            <label for="email">E-mail</label>
             <input type="email" id="email" placeholder="Ex: maria@email.com">
         </div>
         
         <div class="campo">
-            <label>Telefone</label>
+            <label for="telefone">Telefone</label>
             <input type="text" id="telefone" placeholder="Ex: (19) 99999-9999">
         </div>
         
         <button class="btn" id="btnSalvar" onclick="salvarCliente()">SALVAR NO BANCO DE DADOS</button>
         <div id="mensagem"></div>
+        
+        <div class="link-voltar">
+            <a href="login.html">← Voltar para o Login</a>
+        </div>
     </div>
 
     <script>
-        // CONFIGURAÇÃO DO SUPABASE (variável renomeada para evitar conflito)
+        // CONFIGURAÇÃO DO SUPABASE
         const supabaseUrl = 'https://cbbbbzexavckqqcvzvs.supabase.co';
         const supabaseKey = 'sb_publishable_385cnB8yy7vbfjvsHPsfDg_F0WhMYKV';
-        const db = supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Criar cliente Supabase (usando 'db' para evitar conflito com a biblioteca)
+        const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         async function salvarCliente() {
             const btn = document.getElementById('btnSalvar');
             const msg = document.getElementById('mensagem');
             
-            const nome = document.getElementById('nome').value;
-            const email = document.getElementById('email').value;
-            const telefone = document.getElementById('telefone').value;
+            // Pegar valores dos campos
+            const nome = document.getElementById('nome').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
 
+            // Validação
             if (!nome || !email || !telefone) {
-                msg.style.color = 'red';
+                msg.style.color = '#ef4444';
                 msg.innerText = '⚠️ Preencha todos os campos!';
                 return;
             }
 
+            // Mudar estado do botão
             btn.disabled = true;
             btn.innerText = 'Salvando...';
             msg.innerText = '';
 
-            const { data, error } = await db
-                .from('clientes')
-                .insert([{ nome: nome, email: email, telefone: telefone }]);
+            try {
+                // Enviar dados para o Supabase
+                const { data, error } = await db
+                    .from('clientes')
+                    .insert([{ 
+                        nome: nome, 
+                        email: email, 
+                        telefone: telefone 
+                    }]);
 
-            if (error) {
-                console.error('Erro:', error);
-                msg.style.color = 'red';
-                msg.innerText = '❌ Erro: ' + error.message;
-            } else {
-                msg.style.color = '#009e60';
-                msg.innerText = '✅ Cliente salvo com sucesso!';
-                document.getElementById('nome').value = '';
-                document.getElementById('email').value = '';
-                document.getElementById('telefone').value = '';
+                // Verificar erro
+                if (error) {
+                    console.error('Erro do Supabase:', error);
+                    msg.style.color = '#ef4444';
+                    msg.innerText = '❌ Erro ao salvar: ' + error.message;
+                } else {
+                    // Sucesso!
+                    msg.style.color = '#009e60';
+                    msg.innerText = '✅ Cliente salvo com sucesso no banco de dados!';
+                    
+                    // Limpar campos
+                    document.getElementById('nome').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('telefone').value = '';
+                    
+                    console.log('Dados salvos:', data);
+                }
+            } catch (err) {
+                console.error('Erro inesperado:', err);
+                msg.style.color = '#ef4444';
+                msg.innerText = '❌ Erro de conexão. Verifique sua internet.';
             }
 
+            // Restaurar botão
             btn.disabled = false;
             btn.innerText = 'SALVAR NO BANCO DE DADOS';
         }
