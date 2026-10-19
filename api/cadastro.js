@@ -1,54 +1,62 @@
-// API Route da Vercel - Age como "ponte" entre o site e o Supabase
-// O navegador fala com a Vercel (sem bloqueio), e a Vercel fala com o Supabase (sem bloqueio)
+// Importa o cliente Supabase para Node.js
+import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req, res) {
-  // Só aceita requisições POST (mais seguro)
+  // Só aceita POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
   try {
-    // Pega os dados que o site enviou
+    // Pega as variáveis de ambiente
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_KEY;
+
+    // Verifica se as variáveis existem
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('❌ Variáveis de ambiente faltando!');
+      return res.status(500).json({ 
+        error: 'Configuração do servidor incompleta' 
+      });
+    }
+
+    // Cria o cliente Supabase (biblioteca oficial)
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Pega os dados do corpo da requisição
     const { nome, email, telefone } = req.body;
 
-    // Validação básica
+    // Validação
     if (!nome || !email || !telefone) {
       return res.status(400).json({ error: 'Preencha todos os campos' });
     }
 
-    // Pega as chaves do cofre da Vercel (Variáveis de Ambiente)
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_KEY;
+    console.log(' Salvando cliente:', { nome, email, telefone });
 
-    // Faz a requisição direto para o Supabase (de dentro da Vercel, sem bloqueio!)
-    const resposta = await fetch(`${supabaseUrl}/rest/v1/clientes`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`,
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify({ nome, email, telefone })
-    });
+    // Insere na tabela 'clientes'
+    const { data, error } = await supabase
+      .from('clientes')
+      .insert([{ nome, email, telefone }]);
 
-    if (!resposta.ok) {
-      const erro = await resposta.text();
-      console.error('Erro do Supabase:', erro);
-      return res.status(500).json({ error: 'Erro ao salvar no banco' });
+    // Verifica se deu erro
+    if (error) {
+      console.error('❌ Erro do Supabase:', error);
+      return res.status(500).json({ 
+        error: 'Erro ao salvar: ' + error.message 
+      });
     }
 
-    const dados = await resposta.json();
-    console.log('✅ Cliente salvo:', dados);
-
+    console.log('✅ Cliente salvo com sucesso!', data);
     return res.status(200).json({ 
       sucesso: true, 
       mensagem: 'Cliente cadastrado com sucesso!',
-      dados: dados 
+      dados: data 
     });
 
   } catch (erro) {
-    console.error('Erro na API:', erro);
-    return res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error('💥 Erro inesperado:', erro);
+    return res.status(500).json({ 
+      error: 'Erro interno: ' + erro.message 
+    });
   }
 }
